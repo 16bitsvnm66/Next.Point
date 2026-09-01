@@ -20,3 +20,15 @@ def criar_app(db_path=None):
     app.config["SECRET_KEY"] = "next-point-chave-de-desenvolvimento"
     app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
     app.config["DATABASE"] = str(db_path) if db_path else None
+
+    @app.before_request
+    def antes_do_pedido():
+        g.db = get_connection(app.config["DATABASE"]) if app.config["DATABASE"] else get_connection()
+
+    @app.teardown_appcontext
+    def fechar_ligacao(_exc):
+        db = g.pop("db", None)
+        if db is not None:
+            db.close()
+            
+            
