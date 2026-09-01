@@ -14,3 +14,9 @@ PRODUTOS_EXEMPLO = [
     dict(nome="Grip para raquete", categoria="Acessórios", tamanho="Único", cor="Branco",
          preco=6.50, stock=25, descricao="Grip anti-derrapante, fácil de aplicar."),
 ]
+
+def criar_app(db_path=None):
+    app = Flask(__name__)
+    app.config["SECRET_KEY"] = "next-point-chave-de-desenvolvimento"
+    app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
+    app.config["DATABASE"] = str(db_path) if db_path else None
