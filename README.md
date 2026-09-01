@@ -1,4 +1,4 @@
-# Next Point — Loja Virtual de Artigos de Padel (Flask)
+# Next Point — Loja Virtual de Artigos de Padel 
 
 Aplicação web que implementa a proposta de projeto entregue: um catálogo
 público onde os clientes veem produtos e fazem encomendas online, e uma
