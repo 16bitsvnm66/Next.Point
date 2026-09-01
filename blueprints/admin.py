@@ -102,3 +102,37 @@ def editar_produto(produto_id):
     except (DadosInvalidosError, ValueError, NextPointError) as erro:
         flash(f"Não foi possível atualizar o produto: {erro}", "danger")
     return redirect(url_for("admin.produtos"))
+
+@admin_bp.route("/produtos/<int:produto_id>/remover", methods=["POST"])
+def remover_produto(produto_id):
+    try:
+        GestorProdutos(g.db).remover(produto_id)
+        flash("Produto removido.", "info")
+    except NextPointError as erro:
+        flash(str(erro), "danger")
+    return redirect(url_for("admin.produtos"))
+
+# -------------------------------------------------------------- Categorias --
+@admin_bp.route("/categorias")
+def categorias():
+    return render_template("admin/categorias.html", categorias=GestorCategorias(g.db).listar())
+
+
+@admin_bp.route("/categorias/nova", methods=["POST"])
+def criar_categoria():
+    try:
+        GestorCategorias(g.db).adicionar(Categoria(nome=request.form.get("nome", "").strip()))
+        flash("Categoria criada.", "success")
+    except DadosInvalidosError as erro:
+        flash(str(erro), "danger")
+    return redirect(url_for("admin.categorias"))
+
+
+@admin_bp.route("/categorias/<int:categoria_id>/remover", methods=["POST"])
+def remover_categoria(categoria_id):
+    try:
+        GestorCategorias(g.db).remover(categoria_id)
+        flash("Categoria removida.", "info")
+    except NextPointError as erro:
+        flash(str(erro), "danger")
+    return redirect(url_for("admin.categorias"))
