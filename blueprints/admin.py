@@ -143,3 +143,39 @@ def clientes():
     termo = request.args.get("q", "")
     return render_template("admin/clientes.html", clientes=GestorClientes(g.db).listar(termo_pesquisa=termo),
                             termo=termo)
+    
+# ------------------------------------------------------------- Encomendas --
+@admin_bp.route("/encomendas")
+def encomendas():
+    estado = request.args.get("estado", "")
+    gestor_encomendas = GestorEncomendas(g.db)
+    lista = gestor_encomendas.listar(estado=estado)
+    return render_template("admin/encomendas.html", encomendas=lista, estado=estado,
+                            estados=ESTADOS_ENCOMENDA)
+
+
+@admin_bp.route("/encomendas/<int:encomenda_id>")
+def detalhe_encomenda(encomenda_id):
+    gestor_encomendas = GestorEncomendas(g.db)
+    encomenda = gestor_encomendas.obter(encomenda_id)
+    itens = gestor_encomendas.itens_da_encomenda(encomenda_id)
+    return render_template("admin/encomenda_detalhe.html", encomenda=encomenda, itens=itens,
+                            estados=ESTADOS_ENCOMENDA)
+
+
+@admin_bp.route("/encomendas/<int:encomenda_id>/estado", methods=["POST"])
+def actualizar_estado_encomenda(encomenda_id):
+    novo_estado = request.form.get("estado", "pendente")
+    GestorEncomendas(g.db).actualizar_estado(encomenda_id, novo_estado)
+    flash("Estado da encomenda atualizado.", "success")
+    return redirect(url_for("admin.detalhe_encomenda", encomenda_id=encomenda_id))
+
+
+@admin_bp.route("/encomendas/<int:encomenda_id>/cancelar", methods=["POST"])
+def cancelar_encomenda(encomenda_id):
+    try:
+        GestorEncomendas(g.db).cancelar(encomenda_id)
+        flash("Encomenda cancelada e stock reposto.", "info")
+    except NextPointError as erro:
+        flash(str(erro), "danger")
+    return redirect(url_for("admin.encomendas"))
