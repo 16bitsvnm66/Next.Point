@@ -179,3 +179,30 @@ def cancelar_encomenda(encomenda_id):
     except NextPointError as erro:
         flash(str(erro), "danger")
     return redirect(url_for("admin.encomendas"))
+
+# ------------------------------------------------------------- Relatórios --
+@admin_bp.route("/relatorios")
+def relatorios():
+    gestor_encomendas = GestorEncomendas(g.db)
+    gestor_produtos = GestorProdutos(g.db)
+    return render_template(
+        "admin/relatorios.html",
+        receita_total=gestor_encomendas.relatorio_receita_total(),
+        mais_vendidos=gestor_encomendas.relatorio_produtos_mais_vendidos(limite=10),
+        stock_baixo=gestor_produtos.produtos_stock_baixo(),
+    )
+
+
+@admin_bp.route("/relatorios/exportar")
+def exportar_encomendas_csv():
+    encomendas_lista = GestorEncomendas(g.db).listar()
+    buffer = io.StringIO()
+    escritor = csv.DictWriter(buffer, fieldnames=["id", "data_criacao", "cliente_nome", "estado", "total"])
+    escritor.writeheader()
+    for encomenda in encomendas_lista:
+        escritor.writerow({chave: encomenda[chave] for chave in
+                            ["id", "data_criacao", "cliente_nome", "estado", "total"]})
+    return Response(
+        buffer.getvalue(), mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=encomendas_next_point.csv"},
+    )
