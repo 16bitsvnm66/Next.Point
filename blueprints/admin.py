@@ -136,3 +136,10 @@ def remover_categoria(categoria_id):
     except NextPointError as erro:
         flash(str(erro), "danger")
     return redirect(url_for("admin.categorias"))
+
+# ---------------------------------------------------------------- Clientes --
+@admin_bp.route("/clientes")
+def clientes():
+    termo = request.args.get("q", "")
+    return render_template("admin/clientes.html", clientes=GestorClientes(g.db).listar(termo_pesquisa=termo),
+                            termo=termo)
