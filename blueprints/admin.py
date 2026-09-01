@@ -78,3 +78,27 @@ def criar_produto():
     except (DadosInvalidosError, ValueError) as erro:
         flash(f"Não foi possível criar o produto: {erro}", "danger")
     return redirect(url_for("admin.produtos"))
+
+@admin_bp.route("/produtos/<int:produto_id>/editar", methods=["POST"])
+def editar_produto(produto_id):
+    try:
+        gestor_produtos = GestorProdutos(g.db)
+        imagem_actual = gestor_produtos.obter(produto_id).imagem_url
+        nova_imagem = _guardar_imagem(request.files.get("imagem"))
+
+        produto = Produto(
+            id=produto_id,
+            nome=request.form.get("nome", "").strip(),
+            descricao=request.form.get("descricao", "").strip(),
+            categoria_id=request.form.get("categoria_id", type=int),
+            tamanho=request.form.get("tamanho", "").strip() or "Único",
+            cor=request.form.get("cor", "").strip(),
+            preco=float(request.form.get("preco", 0) or 0),
+            stock=int(request.form.get("stock", 0) or 0),
+            imagem_url=nova_imagem or imagem_actual,
+        )
+        gestor_produtos.actualizar(produto)
+        flash("Produto atualizado.", "success")
+    except (DadosInvalidosError, ValueError, NextPointError) as erro:
+        flash(f"Não foi possível atualizar o produto: {erro}", "danger")
+    return redirect(url_for("admin.produtos"))
