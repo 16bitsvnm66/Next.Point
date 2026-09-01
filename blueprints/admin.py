@@ -36,3 +36,33 @@ def _guardar_imagem(ficheiro):
     os.makedirs(pasta_uploads, exist_ok=True)
     ficheiro.save(os.path.join(pasta_uploads, nome_unico))
     return nome_unico
+
+@admin_bp.route("/")
+def dashboard():
+    gestor_produtos = GestorProdutos(g.db)
+    gestor_encomendas = GestorEncomendas(g.db)
+    resumo = {
+        "total_produtos": len(gestor_produtos.listar()),
+        "stock_baixo": len(gestor_produtos.produtos_stock_baixo()),
+        "encomendas_pendentes": len(gestor_encomendas.listar(estado="pendente")),
+        "receita_total": gestor_encomendas.relatorio_receita_total(),
+    }
+    return render_template("admin/dashboard.html", resumo=resumo)
+
+    
+    from blueprints.loja import loja_bp
+    from blueprints.admin import admin_bp
+    app.register_blueprint(loja_bp)
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+
+    @app.errorhandler(404)
+    def pagina_nao_encontrada(_erro):
+        return render_template("erro.html", titulo="Página não encontrada",
+                                mensagem="A página que procuras não existe."), 404
+
+    @app.errorhandler(EntidadeNaoEncontradaError)
+    def entidade_nao_encontrada(erro):
+        return render_template("erro.html", titulo="Não encontrado", mensagem=str(erro)), 404
+
+    return app
+
