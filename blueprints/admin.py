@@ -50,19 +50,31 @@ def dashboard():
     return render_template("admin/dashboard.html", resumo=resumo)
 
     
-    from blueprints.loja import loja_bp
-    from blueprints.admin import admin_bp
-    app.register_blueprint(loja_bp)
-    app.register_blueprint(admin_bp, url_prefix="/admin")
+    # ---------------------------------------------------------------- Produtos --
+@admin_bp.route("/produtos")
+def produtos():
+    gestor_produtos = GestorProdutos(g.db)
+    gestor_categorias = GestorCategorias(g.db)
+    termo = request.args.get("q", "")
+    return render_template("admin/produtos.html", produtos=gestor_produtos.listar(termo_pesquisa=termo),
+                            categorias=gestor_categorias.listar(), termo=termo)
 
-    @app.errorhandler(404)
-    def pagina_nao_encontrada(_erro):
-        return render_template("erro.html", titulo="Página não encontrada",
-                                mensagem="A página que procuras não existe."), 404
 
-    @app.errorhandler(EntidadeNaoEncontradaError)
-    def entidade_nao_encontrada(erro):
-        return render_template("erro.html", titulo="Não encontrado", mensagem=str(erro)), 404
-
-    return app
-
+@admin_bp.route("/produtos/novo", methods=["POST"])
+def criar_produto():
+    try:
+        produto = Produto(
+            nome=request.form.get("nome", "").strip(),
+            descricao=request.form.get("descricao", "").strip(),
+            categoria_id=request.form.get("categoria_id", type=int),
+            tamanho=request.form.get("tamanho", "").strip() or "Único",
+            cor=request.form.get("cor", "").strip(),
+            preco=float(request.form.get("preco", 0) or 0),
+            stock=int(request.form.get("stock", 0) or 0),
+            imagem_url=_guardar_imagem(request.files.get("imagem")) or "",
+        )
+        GestorProdutos(g.db).adicionar(produto)
+        flash("Produto criado com sucesso.", "success")
+    except (DadosInvalidosError, ValueError) as erro:
+        flash(f"Não foi possível criar o produto: {erro}", "danger")
+    return redirect(url_for("admin.produtos"))
