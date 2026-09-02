@@ -83,3 +83,32 @@ class TestGestorProdutos(unittest.TestCase):
         self.produtos.remover(produto.id)
         with self.assertRaises(ProdutoNaoEncontradoError):
             self.produtos.obter(produto.id)
+
+class TestGestorClientes(unittest.TestCase):
+    def setUp(self):
+        self.conn = get_connection(":memory:")
+        init_db(self.conn)
+        self.gestor = GestorClientes(self.conn)
+
+    def tearDown(self):
+        self.conn.close()
+
+    def test_email_invalido_gera_erro(self):
+        with self.assertRaises(DadosInvalidosError):
+            Cliente(nome="Ana", email="sem-arroba")
+
+    def test_obter_ou_criar_por_email_reaproveita_cliente(self):
+        cliente1 = self.gestor.obter_ou_criar_por_email(
+            Cliente(nome="Ana Silva", email="ana@exemplo.pt", telefone="911111111"))
+        cliente2 = self.gestor.obter_ou_criar_por_email(
+            Cliente(nome="Ana Silva Costa", email="ana@exemplo.pt", telefone="922222222"))
+        self.assertEqual(cliente1.id, cliente2.id)
+        self.assertEqual(self.gestor.obter(cliente1.id).telefone, "922222222")
+
+    def test_obter_cliente_inexistente_gera_erro(self):
+        with self.assertRaises(ClienteNaoEncontradoError):
+            self.gestor.obter(999)
+
+
+if __name__ == "__main__":
+    unittest.main()

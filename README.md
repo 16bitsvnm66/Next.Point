@@ -77,6 +77,9 @@ next_point_flask/
 │   ├── css/style.css                     # Estilo (marca Next Point)
 │   └── uploads/                            # Fotos de produtos
 └── tests/                                    # Testes automáticos
+    ├── test_encomendas.py
+    ├── test_produtos_categorias.py
+    └── test_rotas.py
 ```
 
 ## 🚀 Como instalar e correr
