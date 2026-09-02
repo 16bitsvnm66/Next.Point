@@ -59,3 +59,89 @@ class StockInsuficienteError(NextPointError):
 
 class DadosInvalidosError(NextPointError):
     """Levantada quando os dados fornecidos falham a validação."""
+
+
+# --------------------------------------------------------------------------
+# Entidades
+# --------------------------------------------------------------------------
+
+@dataclass
+class Categoria:
+    nome: str
+    id: Optional[int] = None
+
+    def __post_init__(self):
+        if not self.nome.strip():
+            raise DadosInvalidosError("O nome da categoria não pode estar vazio.")
+
+
+@dataclass
+class Produto:
+    nome: str
+    tamanho: str
+    preco: float
+    categoria_id: Optional[int] = None
+    categoria_nome: str = ""   # apenas para exibição (join), não é gravado
+    descricao: str = ""
+    cor: str = ""
+    stock: int = 0
+    imagem_url: str = ""
+    id: Optional[int] = None
+
+    def __post_init__(self):
+        if not self.nome.strip():
+            raise DadosInvalidosError("O nome do produto não pode estar vazio.")
+        if self.preco < 0:
+            raise DadosInvalidosError("O preço não pode ser negativo.")
+        if self.stock < 0:
+            raise DadosInvalidosError("O stock não pode ser negativo.")
+
+    @property
+    def em_rutura(self) -> bool:
+        return self.stock <= 3
+
+
+@dataclass
+class Cliente:
+    nome: str
+    email: str
+    telefone: str = ""
+    id: Optional[int] = None
+
+    def __post_init__(self):
+        if not self.nome.strip():
+            raise DadosInvalidosError("O nome do cliente não pode estar vazio.")
+        if "@" not in self.email:
+            raise DadosInvalidosError("Indica um email válido.")
+
+
+@dataclass
+class ItemEncomenda:
+    produto_id: int
+    quantidade: int
+    preco_unitario: float
+    nome_produto: str = ""
+    id: Optional[int] = None
+    encomenda_id: Optional[int] = None
+
+    def __post_init__(self):
+        if self.quantidade <= 0:
+            raise DadosInvalidosError("A quantidade tem de ser maior que zero.")
+
+    @property
+    def subtotal(self) -> float:
+        return round(self.quantidade * self.preco_unitario, 2)
+
+
+@dataclass
+class Encomenda:
+    itens: list = field(default_factory=list)   # list[ItemEncomenda]
+    cliente_id: Optional[int] = None
+    data_criacao: str = field(default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M"))
+    estado: str = "pendente"
+    observacoes: str = ""
+    id: Optional[int] = None
+
+    @property
+    def total(self) -> float:
+        return round(sum(item.subtotal for item in self.itens), 2)
