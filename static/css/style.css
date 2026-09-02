@@ -1,0 +1,131 @@
+:root {
+  --np-accent: #0F6E56;
+  --np-accent-dark: #0B5943;
+  --np-accent-light: #E1F5EE;
+  --np-ink: #20241f;
+  --np-paper: #FAFAF7;
+}
+
+body {
+  background-color: var(--np-paper);
+  color: var(--np-ink);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, .np-brand-font {
+  font-family: "Poppins", system-ui, sans-serif;
+}
+
+/* Navbar --------------------------------------------------------------- */
+.np-navbar {
+  background-color: var(--np-accent);
+}
+.np-navbar .navbar-brand {
+  font-family: "Poppins", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: .02em;
+}
+.np-logo-dot {
+  display: inline-block;
+  width: .55em; height: .55em;
+  border-radius: 50%;
+  background: #FFC65C;
+  margin-right: .45em;
+}
+.np-badge {
+  background-color: #FFC65C;
+  color: #2b2200;
+  font-weight: 600;
+}
+.np-admin-link {
+  opacity: .75;
+  font-size: .85rem;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 999px;
+  padding: .25rem .9rem !important;
+  margin-left: .5rem;
+}
+.np-admin-link:hover { opacity: 1; }
+
+/* Cards de produto ------------------------------------------------------ */
+.np-card-produto {
+  border: 1px solid #E5E3DA;
+  border-radius: .75rem;
+  transition: box-shadow .15s ease, transform .15s ease;
+  background: #fff;
+}
+.np-card-produto:hover {
+  box-shadow: 0 8px 20px rgba(15,110,86,.12);
+  transform: translateY(-2px);
+}
+.np-thumb {
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(135deg, var(--np-accent-light), #fff);
+  border-radius: .75rem .75rem 0 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem;
+}
+.np-thumb-img {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  object-fit: cover;
+  border-radius: .75rem .75rem 0 0;
+  display: block;
+}
+.np-preco {
+  font-weight: 700;
+  color: var(--np-accent-dark);
+}
+.np-badge-stock-baixo {
+  background-color: #F4CCCC;
+  color: #7a1414;
+}
+
+/* Botões ------------------------------------------------------------ */
+.btn-np {
+  background-color: var(--np-accent);
+  border-color: var(--np-accent);
+  color: #fff;
+}
+.btn-np:hover {
+  background-color: var(--np-accent-dark);
+  border-color: var(--np-accent-dark);
+  color: #fff;
+}
+.btn-outline-np {
+  border-color: var(--np-accent);
+  color: var(--np-accent);
+}
+.btn-outline-np:hover {
+  background-color: var(--np-accent);
+  color: #fff;
+}
+
+/* Tabelas admin -------------------------------------------------------- */
+.table-np thead {
+  background-color: var(--np-accent);
+  color: #fff;
+}
+.np-pill {
+  border-radius: 999px;
+  padding: .2rem .7rem;
+  font-size: .8rem;
+  font-weight: 600;
+}
+.pill-pendente { background: #FFF2CC; color: #7a5b00; }
+.pill-confirmada { background: #D9EAD3; color: #274e13; }
+.pill-enviada { background: #CFE2F3; color: #0b3d63; }
+.pill-concluida { background: var(--np-accent-light); color: var(--np-accent-dark); }
+.pill-cancelada { background: #F4CCCC; color: #7a1414; }
+
+.np-footer {
+  color: #6b6f66;
+  border-top: 1px solid #E5E3DA;
+}
+
+.np-hero {
+  background: linear-gradient(135deg, var(--np-accent) 0%, var(--np-accent-dark) 100%);
+  color: #fff;
+  border-radius: 1rem;
+}
