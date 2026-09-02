@@ -1,61 +1,154 @@
-# Next Point — Loja Virtual de Artigos de Padel 
+# 🎾 Next Point
 
-Aplicação web que implementa a proposta de projeto entregue: um catálogo
-público onde os clientes veem produtos e fazem encomendas online, e uma
-área de administração onde o lojista gere produtos, categorias, clientes
-e o estado das encomendas — substituindo o processo manual no WhatsApp.
+**Loja virtual de artigos de padel** — projeto final da UFCD 5425.
 
-## Como correr
+![Python](https://img.shields.io/badge/Python-3.14-blue?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-3.x-black?logo=flask&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-3-lightgrey?logo=sqlite&logoColor=white)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+
+---
+
+## 📖 Sobre o projeto
+
+O dono de uma pequena loja de artigos de padel gere atualmente o negócio
+através do WhatsApp: os clientes perguntam um a um se um produto está
+disponível, em que tamanho e a que preço, sem catálogo organizado nem
+controlo estruturado de stock.
+
+O **Next Point** resolve esse problema com uma loja virtual completa:
+os clientes consultam o catálogo, montam o carrinho e fazem encomendas
+online, sem depender da troca manual de mensagens — e o lojista gere
+tudo (produtos, stock, encomendas) numa única área de administração.
+
+## Índice
+
+- [Funcionalidades](#-funcionalidades)
+- [Tecnologias](#-tecnologias)
+- [Estrutura do projeto](#-estrutura-do-projeto)
+- [Como instalar e correr](#-como-instalar-e-correr)
+- [Rotas principais](#-rotas-principais)
+- [Testes](#-testes)
+- [Esquema da base de dados](#-esquema-da-base-de-dados)
+- [Limitações e trabalho futuro](#-limitações-e-trabalho-futuro)
+
+## ✨ Funcionalidades
+
+**Para o cliente**
+- Catálogo com filtros por categoria, tamanho e pesquisa por nome
+- Ficha de produto com foto e stock disponível
+- Carrinho de compras (sessão do browser)
+- Checkout com criação automática da encomenda e validação de stock
+- Confirmação e acompanhamento do estado da encomenda
+
+**Para o lojista (área de administração)**
+- CRUD de produtos, com upload de foto
+- CRUD de categorias
+- Listagem de clientes
+- Gestão de encomendas: atualizar estado, cancelar com reposição de stock
+- Relatórios: receita total, produtos mais vendidos, stock baixo
+- Exportação de encomendas em CSV
+
+## 🛠 Tecnologias
+
+| | |
+|---|---|
+| **Backend** | Python 3, Flask |
+| **Base de dados** | SQLite (`sqlite3`, biblioteca padrão) |
+| **Frontend** | HTML5, CSS3, Bootstrap 5, Jinja2 |
+| **Testes** | `unittest`, Flask test client |
+
+## 📁 Estrutura do projeto
+
+```
+next_point_flask/
+├── app.py                    # Ponto de entrada da aplicação
+├── database.py                # Ligação SQLite e esquema (tabelas)
+├── models.py                    # Classes de dados e exceções de negócio
+├── gestor.py                      # Lógica de negócio (CRUD, stock, relatórios)
+├── requirements.txt
+├── blueprints/
+│   ├── loja.py                      # Rotas do cliente
+│   └── admin.py                      # Rotas de administração
+├── templates/                          # Páginas HTML (Jinja2)
+│   ├── loja/
+│   └── admin/
+├── static/
+│   ├── css/style.css                     # Estilo (marca Next Point)
+│   └── uploads/                            # Fotos de produtos
+└── tests/                                    # Testes automáticos
+```
+
+## 🚀 Como instalar e correr
 
 ```bash
+# 1. Criar o ambiente virtual
+python -m venv venv
+
+# 2. Ativar (Windows PowerShell)
+.\venv\Scripts\Activate.ps1
+# — ou no Linux/Mac —
+source venv/bin/activate
+
+# 3. Instalar as dependências
 pip install -r requirements.txt
-python3 app.py
+
+# 4. Correr a aplicação
+python app.py
 ```
 
-Abre depois `http://127.0.0.1:5000` no browser. Na primeira execução é
-criada a base de dados `next_point.db` (SQLite), já com produtos de
-exemplo.
+Abre depois **http://127.0.0.1:5000** no browser (catálogo) e
+**http://127.0.0.1:5000/admin/** (área de administração).
 
-Área de administração: `http://127.0.0.1:5000/admin/` (ainda sem
-autenticação — ver "Limitações" abaixo).
+Na primeira execução é criada automaticamente a base de dados
+`next_point.db`, já com produtos de exemplo.
 
-## Como correr os testes
+> ⚠️ A área `/admin` ainda não tem autenticação — ver
+> [Limitações](#-limitações-e-trabalho-futuro).
+
+## 🧭 Rotas principais
+
+| Rota | Método | Descrição |
+|---|---|---|
+| `/` | GET | Catálogo de produtos |
+| `/produto/<id>` | GET | Ficha de produto |
+| `/carrinho/adicionar/<id>` | POST | Adicionar produto ao carrinho |
+| `/carrinho` | GET | Ver carrinho |
+| `/checkout` | GET/POST | Finalizar encomenda |
+| `/encomenda/<id>` | GET | Confirmação da encomenda |
+| `/admin/` | GET | Dashboard da administração |
+| `/admin/produtos` | GET | Gestão de produtos |
+| `/admin/categorias` | GET | Gestão de categorias |
+| `/admin/encomendas` | GET | Gestão de encomendas |
+| `/admin/relatorios` | GET | Relatórios e exportação CSV |
+
+## ✅ Testes
 
 ```bash
-python3 -m unittest discover -s tests -v
+python -m unittest discover -s tests -v
 ```
 
-## Estrutura do projecto
+Cobrem a lógica de negócio (validações, cálculo de totais, regras de
+stock) e o comportamento ponta-a-ponta das rotas, através do Flask test
+client — sem precisar de um browser real.
 
-| Ficheiro / pasta       | Responsabilidade |
-|--------------------------|--------------------|
-| `database.py`           | Ligação SQLite e criação do esquema (tabelas) |
-| `models.py`               | Classes de dados e exceções de negócio |
-| `gestor.py`                 | Lógica de negócio: CRUD, regras de stock, cálculo de totais, relatórios |
-| `blueprints/loja.py`         | Rotas do cliente: catálogo, ficha de produto, carrinho, checkout |
-| `blueprints/admin.py`          | Rotas de administração: produtos, categorias, clientes, encomendas, relatórios |
-| `templates/`                     | Páginas HTML (Jinja2 + Bootstrap 5) |
-| `static/css/style.css`             | Estilo personalizado (cor de marca Next Point) |
-| `static/uploads/`                    | Fotos de produtos enviadas pela área de administração |
-| `tests/`                             | Testes automáticos (unitários + rotas) |
+## 🗄 Esquema da base de dados
 
-## Esquema da base de dados
+```
+Categoria 1───N Produto 1───N ItemEncomenda N───1 Encomenda N───1 Cliente
+```
 
-`categorias`, `produtos` (com `categoria_id`, `imagem_url`),
-`clientes`, `encomendas` e `itens_encomenda`.
+`categorias` · `produtos` (com `categoria_id`, `imagem_url`) ·
+`clientes` · `encomendas` · `itens_encomenda`
 
-## Funcionalidades implementadas
+## 🔭 Limitações e trabalho futuro
 
-- **Catálogo**: listagem com filtros por categoria, tamanho e pesquisa por nome.
-- **Ficha de produto** com foto e stock disponível.
-- **Carrinho de compras** (guardado na sessão do browser).
-- **Checkout**: cria/reaproveita o cliente pelo email, valida stock, cria a encomenda e atualiza o stock automaticamente.
-- **Administração**: CRUD de produtos (com upload de foto) e categorias, listagem de clientes, gestão de encomendas (atualizar estado, cancelar com reposição de stock), relatórios (receita total, mais vendidos, stock baixo) e exportação de encomendas em CSV.
-- **Upload de imagens**: fotos de produtos carregadas a partir do computador (jpg/png/webp/gif, até 5MB), guardadas em `static/uploads/`.
+- [ ] Autenticação na área de administração
+- [ ] Pagamento online
+- [ ] Notificações automáticas por email
+- [ ] Deployment em ambiente de produção
+- [ ] Dashboard de vendas / relatórios em PDF
 
-## Limitações conhecidas (funcionalidades futuras)
+---
 
-- Sem autenticação na área `/admin`.
-- Sem pagamento online.
-- Sem envio de emails/notificações automáticas.
-- Aplicação ainda não publicada em produção (deployment por fazer).
+<p align="center"><sub>Projeto académico — UFCD 5425</sub></p>
