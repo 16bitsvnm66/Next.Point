@@ -1,3 +1,19 @@
+"""
+app.py
+--------
+Ponto de entrada da aplicação Flask. Cria a app, gere a ligação à base
+de dados por pedido (flask.g) e regista os blueprints da loja e da
+área de administração.
+
+Correr com:  python3 app.py
+"""
+
+from flask import Flask, g, render_template
+
+from database import criar_ligacao_e_iniciar, get_connection
+from gestor import GestorCategorias, GestorProdutos
+from models import Categoria, EntidadeNaoEncontradaError, Produto
+
 CATEGORIAS_EXEMPLO = ["Roupa", "Calçado", "Acessórios"]
 
 PRODUTOS_EXEMPLO = [
@@ -29,6 +45,48 @@ def criar_app(db_path=None):
     def fechar_ligacao(_exc):
         db = g.pop("db", None)
         if db is not None:
-            db.close()
-            
+            db.close()        
+
+    from blueprints.loja import loja_bp
+    from blueprints.admin import admin_bp
+    app.register_blueprint(loja_bp)
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+
+    @app.errorhandler(404)
+    def pagina_nao_encontrada(_erro):
+        return render_template("erro.html", titulo="Página não encontrada",
+                                mensagem="A página que procuras não existe."), 404
+
+    @app.errorhandler(EntidadeNaoEncontradaError)
+    def entidade_nao_encontrada(erro):
+        return render_template("erro.html", titulo="Não encontrado", mensagem=str(erro)), 404
+
+    return app
+
+
+def popular_dados_exemplo_se_vazio(conn):
+    gestor_categorias = GestorCategorias(conn)
+    gestor_produtos = GestorProdutos(conn)
+
+    if gestor_produtos.listar():
+        return  # já há produtos, não faz nada
+
+    mapa_categorias = {}
+    for nome in CATEGORIAS_EXEMPLO:
+        categoria = gestor_categorias.adicionar(Categoria(nome=nome))
+        mapa_categorias[nome] = categoria.id
+
+    for dados_originais in PRODUTOS_EXEMPLO:
+        dados = dict(dados_originais)  # cópia: não mutar a lista partilhada
+        categoria_id = mapa_categorias[dados.pop("categoria")]
+        gestor_produtos.adicionar(Produto(categoria_id=categoria_id, **dados))
+
+
+app = criar_app()
+
+if __name__ == "__main__":
+    conn_inicial = criar_ligacao_e_iniciar()
+    popular_dados_exemplo_se_vazio(conn_inicial)
+    conn_inicial.close()
+    app.run(debug=True)
             
