@@ -63,7 +63,6 @@ def criar_app(db_path=None):
 
     return app
 
-
 def popular_dados_exemplo_se_vazio(conn):
     gestor_categorias = GestorCategorias(conn)
     gestor_produtos = GestorProdutos(conn)
