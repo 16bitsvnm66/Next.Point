@@ -126,3 +126,10 @@ def checkout():
             flash(str(erro), "danger")
 
     return render_template("loja/checkout.html", itens=itens, total=total)
+
+@loja_bp.route("/encomenda/<int:encomenda_id>")
+def confirmacao_encomenda(encomenda_id):
+    gestor_encomendas = GestorEncomendas(g.db)
+    encomenda = gestor_encomendas.obter(encomenda_id)
+    itens = gestor_encomendas.itens_da_encomenda(encomenda_id)
+    return render_template("loja/confirmacao.html", encomenda=encomenda, itens=itens)
