@@ -26,16 +26,16 @@ class TestGestorEncomendas(unittest.TestCase):
     def tearDown(self):
             self.conn.close()
     
-        def test_criar_encomenda_calcula_total_correcto(self):
+    def test_criar_encomenda_calcula_total_correcto(self):
             encomenda = self.encomendas.criar_encomenda(
                 itens=[(self.p1.id, 2), (self.p2.id, 1)], cliente_id=self.cliente.id)
             self.assertEqual(encomenda.total, 55.0)  # 2*20 + 1*15
     
-        def test_criar_encomenda_actualiza_stock(self):
+    def test_criar_encomenda_actualiza_stock(self):
             self.encomendas.criar_encomenda(itens=[(self.p1.id, 3)], cliente_id=self.cliente.id)
             self.assertEqual(self.produtos.obter(self.p1.id).stock, 7)
     
-        def test_stock_insuficiente_nao_grava_nada(self):
+    def test_stock_insuficiente_nao_grava_nada(self):
             with self.assertRaises(StockInsuficienteError):
                 self.encomendas.criar_encomenda(itens=[(self.p2.id, 999)], cliente_id=self.cliente.id)
             self.assertEqual(self.produtos.obter(self.p2.id).stock, 5)
@@ -44,24 +44,24 @@ class TestGestorEncomendas(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.encomendas.criar_encomenda(itens=[], cliente_id=self.cliente.id)
     
-        def test_cancelar_encomenda_repoe_stock(self):
+    def test_cancelar_encomenda_repoe_stock(self):
             encomenda = self.encomendas.criar_encomenda(itens=[(self.p1.id, 4)], cliente_id=self.cliente.id)
             self.encomendas.cancelar(encomenda.id)
             self.assertEqual(self.produtos.obter(self.p1.id).stock, 10)
             self.assertEqual(self.encomendas.obter(encomenda.id)["estado"], "cancelada")
     
-        def test_actualizar_estado(self):
+    def test_actualizar_estado(self):
             encomenda = self.encomendas.criar_encomenda(itens=[(self.p1.id, 1)], cliente_id=self.cliente.id)
             self.encomendas.actualizar_estado(encomenda.id, "confirmada")
             self.assertEqual(self.encomendas.obter(encomenda.id)["estado"], "confirmada")
     
-        def test_relatorio_receita_ignora_canceladas(self):
+    def test_relatorio_receita_ignora_canceladas(self):
             v1 = self.encomendas.criar_encomenda(itens=[(self.p1.id, 1)], cliente_id=self.cliente.id)
             self.encomendas.criar_encomenda(itens=[(self.p2.id, 1)], cliente_id=self.cliente.id)
             self.encomendas.cancelar(v1.id)
             self.assertEqual(self.encomendas.relatorio_receita_total(), 15.0)
     
-        def test_relatorio_produtos_mais_vendidos(self):
+    def test_relatorio_produtos_mais_vendidos(self):
             self.encomendas.criar_encomenda(itens=[(self.p1.id, 5)], cliente_id=self.cliente.id)
             self.encomendas.criar_encomenda(itens=[(self.p2.id, 1)], cliente_id=self.cliente.id)
             ranking = self.encomendas.relatorio_produtos_mais_vendidos(limite=1)
