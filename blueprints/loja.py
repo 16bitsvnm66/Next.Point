@@ -94,3 +94,35 @@ def remover_do_carrinho(produto_id):
     session.modified = True
     flash("Produto removido do carrinho.", "info")
     return redirect(url_for("loja.ver_carrinho"))
+
+@loja_bp.route("/checkout", methods=["GET", "POST"])
+def checkout():
+    itens, total = _itens_do_carrinho()
+    if not itens:
+        flash("O carrinho está vazio.", "warning")
+        return redirect(url_for("loja.catalogo"))
+
+    if request.method == "POST":
+        try:
+            cliente = Cliente(
+                nome=request.form.get("nome", "").strip(),
+                email=request.form.get("email", "").strip(),
+                telefone=request.form.get("telefone", "").strip(),
+            )
+            gestor_clientes = GestorClientes(g.db)
+            cliente = gestor_clientes.obter_ou_criar_por_email(cliente)
+
+            gestor_encomendas = GestorEncomendas(g.db)
+            itens_para_criar = [(int(pid), qtd) for pid, qtd in _carrinho().items()]
+            encomenda = gestor_encomendas.criar_encomenda(
+                itens=itens_para_criar, cliente_id=cliente.id,
+                observacoes=request.form.get("observacoes", "").strip(),
+            )
+            session["carrinho"] = {}
+            session.modified = True
+            flash("Encomenda registada com sucesso!", "success")
+            return redirect(url_for("loja.confirmacao_encomenda", encomenda_id=encomenda.id))
+        except (DadosInvalidosError, StockInsuficienteError) as erro:
+            flash(str(erro), "danger")
+
+    return render_template("loja/checkout.html", itens=itens, total=total)
