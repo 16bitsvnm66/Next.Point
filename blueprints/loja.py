@@ -31,3 +31,21 @@ def _itens_do_carrinho():
         total += subtotal
         itens.append({"produto": produto, "quantidade": quantidade, "subtotal": subtotal})
     return itens, round(total, 2)
+
+@loja_bp.route("/")
+def catalogo():
+    gestor_produtos = GestorProdutos(g.db)
+    gestor_categorias = GestorCategorias(g.db)
+
+    termo = request.args.get("q", "")
+    categoria_id = request.args.get("categoria", type=int)
+    tamanho = request.args.get("tamanho", "")
+
+    produtos = gestor_produtos.listar(termo_pesquisa=termo, categoria_id=categoria_id, tamanho=tamanho)
+    categorias = gestor_categorias.listar()
+    todos_produtos = gestor_produtos.listar()
+    tamanhos = sorted({p.tamanho for p in todos_produtos})
+
+    return render_template("loja/catalogo.html", produtos=produtos, categorias=categorias,
+                            tamanhos=tamanhos, termo=termo, categoria_id=categoria_id,
+                            tamanho=tamanho, total_carrinho=len(_carrinho()))
