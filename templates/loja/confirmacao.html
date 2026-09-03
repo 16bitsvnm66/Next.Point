@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block titulo %}Encomenda confirmada{% endblock %}
+{% block conteudo %}
+
+<div class="text-center mb-4">
+  <div class="display-4 mb-2">✅</div>
+  <h1 class="h3">Obrigado, {{ encomenda.cliente_nome }}!</h1>
+  <p class="text-muted">A tua encomenda <strong>#{{ encomenda.id }}</strong> foi registada.</p>
+  <span class="np-pill pill-{{ encomenda.estado }}">{{ encomenda.estado|capitalize }}</span>
+</div>
+
+<div class="card mx-auto" style="max-width: 32rem;">
+  <div class="card-body">
+    <ul class="list-unstyled mb-3">
+      {% for item in itens %}
+        <li class="d-flex justify-content-between mb-1">
+          <span>{{ item.quantidade }} × {{ item.nome_produto }}</span>
+          <span>{{ "%.2f"|format(item.quantidade * item.preco_unitario) }} €</span>
+        </li>
+      {% endfor %}
+    </ul>
+    <hr>
+    <div class="d-flex justify-content-between fs-5">
+      <strong>Total</strong>
+      <strong class="np-preco">{{ "%.2f"|format(encomenda.total) }} €</strong>
+    </div>
+  </div>
+</div>
+
+<p class="text-center mt-4">
+  <a href="{{ url_for('loja.catalogo') }}" class="btn btn-outline-np">Continuar a ver o catálogo</a>
+</p>
+
+{% endblock %}

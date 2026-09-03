@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block titulo %}Carrinho{% endblock %}
+{% block conteudo %}
+
+<h1 class="h3 mb-4">O teu carrinho</h1>
+
+{% if not itens %}
+  <p class="text-muted">O carrinho está vazio. <a href="{{ url_for('loja.catalogo') }}">Ver catálogo</a></p>
+{% else %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr><th>Produto</th><th>Preço</th><th style="width:9rem">Quantidade</th><th>Subtotal</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for item in itens %}
+          <tr>
+            <td>
+              <a href="{{ url_for('loja.ficha_produto', produto_id=item.produto.id) }}" class="text-reset text-decoration-none">
+                {{ item.produto.nome }}
+              </a>
+              <div class="small text-muted">{{ item.produto.tamanho }}</div>
+            </td>
+            <td>{{ "%.2f"|format(item.produto.preco) }} €</td>
+            <td>
+              <form method="post" action="{{ url_for('loja.atualizar_carrinho', produto_id=item.produto.id) }}" class="d-flex gap-1">
+                <input type="number" name="quantidade" value="{{ item.quantidade }}" min="0" max="{{ item.produto.stock }}" class="form-control form-control-sm">
+                <button class="btn btn-outline-np btn-sm">OK</button>
+              </form>
+            </td>
+            <td class="np-preco">{{ "%.2f"|format(item.subtotal) }} €</td>
+            <td>
+              <form method="post" action="{{ url_for('loja.remover_do_carrinho', produto_id=item.produto.id) }}">
+                <button class="btn btn-sm btn-outline-danger">Remover</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-end align-items-center gap-3 mt-3">
+    <span class="fs-5">Total: <strong class="np-preco">{{ "%.2f"|format(total) }} €</strong></span>
+    <a href="{{ url_for('loja.checkout') }}" class="btn btn-np btn-lg">Finalizar encomenda</a>
+  </div>
+{% endif %}
+
+{% endblock %}

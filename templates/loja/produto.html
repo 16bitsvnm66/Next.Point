@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block titulo %}{{ produto.nome }}{% endblock %}
+{% block conteudo %}
+
+<nav class="mb-3 small"><a href="{{ url_for('loja.catalogo') }}" class="text-decoration-none">&larr; Voltar ao catálogo</a></nav>
+
+<div class="row g-4">
+  <div class="col-md-5">
+    {% if produto.imagem_url %}
+      <img src="{{ url_for('static', filename='uploads/' + produto.imagem_url) }}" alt="{{ produto.nome }}" class="np-thumb-img" style="border-radius:.75rem;">
+    {% else %}
+      <div class="np-thumb" style="border-radius: .75rem; font-size: 4rem;">🎾</div>
+    {% endif %}
+  </div>
+  <div class="col-md-7">
+    <div class="small text-muted">{{ produto.categoria_nome }}</div>
+    <h1 class="h2">{{ produto.nome }}</h1>
+    <p class="np-preco fs-3">{{ "%.2f"|format(produto.preco) }} €</p>
+    <p>{{ produto.descricao or "Sem descrição adicional." }}</p>
+    <ul class="list-unstyled small text-muted">
+      <li><strong>Tamanho:</strong> {{ produto.tamanho }}</li>
+      {% if produto.cor %}<li><strong>Cor:</strong> {{ produto.cor }}</li>{% endif %}
+      <li><strong>Stock disponível:</strong> {{ produto.stock }} unidade(s)</li>
+    </ul>
+
+    {% if produto.em_rutura and produto.stock > 0 %}
+      <p class="np-pill np-badge-stock-baixo d-inline-block mb-3">Últimas unidades</p>
+    {% endif %}
+
+    {% if produto.stock > 0 %}
+      <form method="post" action="{{ url_for('loja.adicionar_ao_carrinho', produto_id=produto.id) }}" class="d-flex gap-2" style="max-width:20rem;">
+        <input type="number" name="quantidade" value="1" min="1" max="{{ produto.stock }}" class="form-control">
+        <button class="btn btn-np" type="submit">Adicionar ao carrinho</button>
+      </form>
+    {% else %}
+      <button class="btn btn-secondary" disabled>Esgotado</button>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

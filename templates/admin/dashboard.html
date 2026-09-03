@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block titulo %}Administração{% endblock %}
+{% block conteudo %}
+
+<h1 class="h3 mb-4">Área de Administração</h1>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card border-0" style="background: var(--np-accent-light);">
+      <div class="card-body text-center">
+        <div class="fs-3 np-preco">{{ resumo.total_produtos }}</div>
+        <div class="small text-muted">Produtos no catálogo</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0" style="background: #FFF2CC;">
+      <div class="card-body text-center">
+        <div class="fs-3" style="color:#7a5b00;">{{ resumo.stock_baixo }}</div>
+        <div class="small text-muted">Produtos com stock baixo</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0" style="background: #CFE2F3;">
+      <div class="card-body text-center">
+        <div class="fs-3" style="color:#0b3d63;">{{ resumo.encomendas_pendentes }}</div>
+        <div class="small text-muted">Encomendas pendentes</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0" style="background: var(--np-accent-light);">
+      <div class="card-body text-center">
+        <div class="fs-3 np-preco">{{ "%.2f"|format(resumo.receita_total) }} €</div>
+        <div class="small text-muted">Receita total</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <a href="{{ url_for('admin.produtos') }}" class="card text-decoration-none text-reset np-card-produto">
+      <div class="card-body"><h2 class="h5">📦 Produtos</h2><p class="small text-muted mb-0">Criar, editar e remover produtos.</p></div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('admin.categorias') }}" class="card text-decoration-none text-reset np-card-produto">
+      <div class="card-body"><h2 class="h5">🏷️ Categorias</h2><p class="small text-muted mb-0">Organizar o catálogo por categorias.</p></div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('admin.encomendas') }}" class="card text-decoration-none text-reset np-card-produto">
+      <div class="card-body"><h2 class="h5">🧾 Encomendas</h2><p class="small text-muted mb-0">Acompanhar e atualizar o estado das encomendas.</p></div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('admin.clientes') }}" class="card text-decoration-none text-reset np-card-produto">
+      <div class="card-body"><h2 class="h5">👤 Clientes</h2><p class="small text-muted mb-0">Consultar os clientes registados.</p></div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('admin.relatorios') }}" class="card text-decoration-none text-reset np-card-produto">
+      <div class="card-body"><h2 class="h5">📊 Relatórios</h2><p class="small text-muted mb-0">Receita, mais vendidos e exportação CSV.</p></div>
+    </a>
+  </div>
+</div>
+
+<p class="small text-muted mt-4">
+  Nota: esta área ainda não tem autenticação — está listada como funcionalidade futura na proposta do projeto.
+</p>
+
+{% endblock %}

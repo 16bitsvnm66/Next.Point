@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block titulo %}Categorias{% endblock %}
+{% block conteudo %}
+
+<h1 class="h3 mb-4">Categorias</h1>
+
+<form method="post" action="{{ url_for('admin.criar_categoria') }}" class="row g-2 mb-4" style="max-width:28rem;">
+  <div class="col-8"><input type="text" name="nome" class="form-control" placeholder="Nova categoria (ex.: Roupa)" required></div>
+  <div class="col-4 d-grid"><button class="btn btn-np">Adicionar</button></div>
+</form>
+
+<div class="table-responsive" style="max-width:28rem;">
+  <table class="table table-np">
+    <thead><tr><th>Nome</th><th></th></tr></thead>
+    <tbody>
+      {% for c in categorias %}
+        <tr>
+          <td>{{ c.nome }}</td>
+          <td class="text-end">
+            <form method="post" action="{{ url_for('admin.remover_categoria', categoria_id=c.id) }}" onsubmit="return confirm('Remover esta categoria?');">
+              <button class="btn btn-sm btn-outline-danger">Remover</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="2" class="text-muted">Ainda não existem categorias.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

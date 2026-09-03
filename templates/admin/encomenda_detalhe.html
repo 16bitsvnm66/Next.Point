@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block titulo %}Encomenda #{{ encomenda.id }}{% endblock %}
+{% block conteudo %}
+
+<nav class="mb-3 small"><a href="{{ url_for('admin.encomendas') }}" class="text-decoration-none">&larr; Voltar às encomendas</a></nav>
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h1 class="h3 mb-1">Encomenda #{{ encomenda.id }}</h1>
+    <div class="text-muted">{{ encomenda.data_criacao }} · {{ encomenda.cliente_nome }} ({{ encomenda.cliente_email or "sem email" }})</div>
+  </div>
+  <span class="np-pill pill-{{ encomenda.estado }} fs-6">{{ encomenda.estado|capitalize }}</span>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-7">
+    <table class="table table-np">
+      <thead><tr><th>Produto</th><th>Qtd</th><th>Preço</th><th>Subtotal</th></tr></thead>
+      <tbody>
+        {% for item in itens %}
+          <tr>
+            <td>{{ item.nome_produto }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ "%.2f"|format(item.preco_unitario) }} €</td>
+            <td>{{ "%.2f"|format(item.quantidade * item.preco_unitario) }} €</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr><td colspan="3" class="text-end"><strong>Total</strong></td><td class="np-preco"><strong>{{ "%.2f"|format(encomenda.total) }} €</strong></td></tr>
+      </tfoot>
+    </table>
+    {% if encomenda.observacoes %}
+      <p class="text-muted"><strong>Observações:</strong> {{ encomenda.observacoes }}</p>
+    {% endif %}
+  </div>
+
+  <div class="col-md-5">
+    <div class="card border-0" style="background: var(--np-accent-light);">
+      <div class="card-body">
+        <h2 class="h6 mb-3">Atualizar estado</h2>
+        <form method="post" action="{{ url_for('admin.actualizar_estado_encomenda', encomenda_id=encomenda.id) }}" class="d-flex gap-2 mb-3">
+          <select name="estado" class="form-select">
+            {% for e in estados %}
+              <option value="{{ e }}" {% if encomenda.estado == e %}selected{% endif %}>{{ e|capitalize }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-np">Guardar</button>
+        </form>
+
+        {% if encomenda.estado != "cancelada" %}
+          <form method="post" action="{{ url_for('admin.cancelar_encomenda', encomenda_id=encomenda.id) }}" onsubmit="return confirm('Cancelar esta encomenda e repor o stock?');">
+            <button class="btn btn-outline-danger w-100">Cancelar encomenda</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

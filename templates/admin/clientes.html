@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block titulo %}Clientes{% endblock %}
+{% block conteudo %}
+
+<h1 class="h3 mb-4">Clientes</h1>
+
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-4">
+    <input type="text" class="form-control" name="q" placeholder="Pesquisar cliente..." value="{{ termo }}">
+  </div>
+  <div class="col-md-2 d-grid"><button class="btn btn-outline-np">Pesquisar</button></div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-np">
+    <thead><tr><th>Nome</th><th>Email</th><th>Telefone</th></tr></thead>
+    <tbody>
+      {% for cliente in clientes %}
+        <tr><td>{{ cliente.nome }}</td><td>{{ cliente.email }}</td><td>{{ cliente.telefone or "—" }}</td></tr>
+      {% else %}
+        <tr><td colspan="3" class="text-muted">Ainda não existem clientes registados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

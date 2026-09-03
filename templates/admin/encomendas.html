@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Encomendas{% endblock %}
+{% block conteudo %}
+
+<h1 class="h3 mb-4">Encomendas</h1>
+
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-3">
+    <select name="estado" class="form-select" onchange="this.form.submit()">
+      <option value="">Todos os estados</option>
+      {% for e in estados %}
+        <option value="{{ e }}" {% if estado == e %}selected{% endif %}>{{ e|capitalize }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-np align-middle">
+    <thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Estado</th><th>Total</th><th></th></tr></thead>
+    <tbody>
+      {% for enc in encomendas %}
+        <tr>
+          <td>#{{ enc.id }}</td>
+          <td>{{ enc.data_criacao }}</td>
+          <td>{{ enc.cliente_nome }}</td>
+          <td><span class="np-pill pill-{{ enc.estado }}">{{ enc.estado|capitalize }}</span></td>
+          <td class="np-preco">{{ "%.2f"|format(enc.total) }} €</td>
+          <td class="text-end"><a href="{{ url_for('admin.detalhe_encomenda', encomenda_id=enc.id) }}" class="btn btn-sm btn-outline-np">Ver detalhe</a></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="text-muted">Ainda não existem encomendas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<a href="{{ url_for('admin.relatorios') }}" class="btn btn-outline-np btn-sm">Exportar / ver relatórios →</a>
+
+{% endblock %}

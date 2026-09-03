@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block titulo %}Produtos{% endblock %}
+{% block conteudo %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 mb-0">Produtos</h1>
+  <button class="btn btn-np" data-bs-toggle="modal" data-bs-target="#modalNovoProduto">+ Novo produto</button>
+</div>
+
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-4">
+    <input type="text" class="form-control" name="q" placeholder="Pesquisar produto..." value="{{ termo }}">
+  </div>
+  <div class="col-md-2 d-grid"><button class="btn btn-outline-np">Pesquisar</button></div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-np align-middle">
+    <thead>
+      <tr><th>Nome</th><th>Categoria</th><th>Tamanho</th><th>Preço</th><th>Stock</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for p in produtos %}
+        <tr class="{{ 'table-danger' if p.em_rutura }}">
+          <td>{{ p.nome }}</td>
+          <td>{{ p.categoria_nome }}</td>
+          <td>{{ p.tamanho }}</td>
+          <td>{{ "%.2f"|format(p.preco) }} €</td>
+          <td>{{ p.stock }}{% if p.em_rutura %} <span class="np-pill np-badge-stock-baixo">baixo</span>{% endif %}</td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-np" data-bs-toggle="modal" data-bs-target="#modalEditar{{ p.id }}">Editar</button>
+            <form method="post" action="{{ url_for('admin.remover_produto', produto_id=p.id) }}" class="d-inline" onsubmit="return confirm('Remover este produto?');">
+              <button class="btn btn-sm btn-outline-danger">Remover</button>
+            </form>
+          </td>
+        </tr>
+
+        <div class="modal fade" id="modalEditar{{ p.id }}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="post" action="{{ url_for('admin.editar_produto', produto_id=p.id) }}" enctype="multipart/form-data">
+                <div class="modal-header"><h5 class="modal-title">Editar produto</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                  {% include "admin/_campos_produto.html" with context %}
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-np">Guardar alterações</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal fade" id="modalNovoProduto" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{{ url_for('admin.criar_produto') }}" enctype="multipart/form-data">
+        <div class="modal-header"><h5 class="modal-title">Novo produto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          {% set p = None %}
+          {% include "admin/_campos_produto.html" with context %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-np">Criar produto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

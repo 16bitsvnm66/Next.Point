@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block titulo %}Catálogo{% endblock %}
+{% block conteudo %}
+
+<div class="np-hero p-4 p-md-5 mb-4">
+  <h1 class="mb-2">Equipamento de padel, sem esperar por resposta no WhatsApp.</h1>
+  <p class="mb-0 opacity-75">Catálogo completo, stock em tempo real e encomenda online — a loja do teu clube, agora também na tua mão.</p>
+</div>
+
+<form class="row g-2 mb-4" method="get">
+  <div class="col-md-4">
+    <input type="text" class="form-control" name="q" placeholder="Pesquisar produto..." value="{{ termo }}">
+  </div>
+  <div class="col-md-3">
+    <select class="form-select" name="categoria">
+      <option value="">Todas as categorias</option>
+      {% for c in categorias %}
+        <option value="{{ c.id }}" {% if categoria_id == c.id %}selected{% endif %}>{{ c.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <select class="form-select" name="tamanho">
+      <option value="">Todos os tamanhos</option>
+      {% for t in tamanhos %}
+        <option value="{{ t }}" {% if tamanho == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2 d-grid">
+    <button class="btn btn-np" type="submit">Filtrar</button>
+  </div>
+</form>
+
+{% if not produtos %}
+  <p class="text-muted">Não foram encontrados produtos com estes filtros.</p>
+{% endif %}
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+  {% for produto in produtos %}
+    <div class="col">
+      <div class="card np-card-produto h-100">
+        <a href="{{ url_for('loja.ficha_produto', produto_id=produto.id) }}" class="text-decoration-none text-reset">
+          {% if produto.imagem_url %}
+            <img src="{{ url_for('static', filename='uploads/' + produto.imagem_url) }}" alt="{{ produto.nome }}" class="np-thumb-img">
+          {% else %}
+            <div class="np-thumb">🎾</div>
+          {% endif %}
+          <div class="card-body">
+            <div class="small text-muted">{{ produto.categoria_nome }} · {{ produto.tamanho }}</div>
+            <h5 class="card-title mb-1">{{ produto.nome }}</h5>
+            <p class="np-preco mb-1">{{ "%.2f"|format(produto.preco) }} €</p>
+            {% if produto.em_rutura %}
+              <span class="np-pill np-badge-stock-baixo">Últimas unidades</span>
+            {% endif %}
+          </div>
+        </a>
+        <div class="card-footer bg-white border-0 pt-0">
+          <form method="post" action="{{ url_for('loja.adicionar_ao_carrinho', produto_id=produto.id) }}" class="d-flex gap-2">
+            <input type="number" name="quantidade" value="1" min="1" max="{{ produto.stock }}" class="form-control form-control-sm" style="width:4.5rem" {% if produto.stock == 0 %}disabled{% endif %}>
+            <button class="btn btn-np btn-sm flex-fill" type="submit" {% if produto.stock == 0 %}disabled{% endif %}>
+              {{ "Esgotado" if produto.stock == 0 else "Adicionar" }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

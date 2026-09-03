@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titulo %}Relatórios{% endblock %}
+{% block conteudo %}
+
+<h1 class="h3 mb-4">Relatórios</h1>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card border-0 h-100" style="background: var(--np-accent-light);">
+      <div class="card-body">
+        <div class="small text-muted">Receita total</div>
+        <div class="fs-2 np-preco">{{ "%.2f"|format(receita_total) }} €</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h6 mb-3">Produtos mais vendidos</h2>
+        {% if mais_vendidos %}
+          <ol class="mb-0">
+            {% for item in mais_vendidos %}
+              <li>{{ item.nome }} — {{ item.total_vendido }} unidade(s)</li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <p class="text-muted mb-0">Ainda não há vendas registadas.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h6 mb-3">Produtos com stock baixo (≤ 3 unidades)</h2>
+        {% if stock_baixo %}
+          <ul class="mb-0">
+            {% for p in stock_baixo %}
+              <li>{{ p.nome }} — {{ p.stock }} unidade(s)</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted mb-0">Sem produtos em stock baixo neste momento.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="{{ url_for('admin.exportar_encomendas_csv') }}" class="btn btn-np mt-4">Exportar encomendas (CSV)</a>
+
+{% endblock %}
