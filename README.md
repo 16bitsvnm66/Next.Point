@@ -5,7 +5,8 @@
 ![Python](https://img.shields.io/badge/Python-3.14-blue?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.x-black?logo=flask&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-3-lightgrey?logo=sqlite&logoColor=white)
-![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+![Status](https://img.shields.io/badge/status-conclu%C3%ADdo-brightgreen)
+![Tests](https://img.shields.io/badge/testes-26%20a%20passar-brightgreen)
 
 ---
 
@@ -20,6 +21,9 @@ O **Next Point** resolve esse problema com uma loja virtual completa:
 os clientes consultam o catálogo, montam o carrinho e fazem encomendas
 online, sem depender da troca manual de mensagens — e o lojista gere
 tudo (produtos, stock, encomendas) numa única área de administração.
+
+> ✅ **Projeto concluído** — Product Backlog a 100% (39/39 tarefas), incluindo
+> desenvolvimento, testes e deployment.
 
 ## Índice
 
@@ -146,11 +150,14 @@ Categoria 1───N Produto 1───N ItemEncomenda N───1 Encomenda N�
 
 ## 🔭 Limitações e trabalho futuro
 
+O projeto está concluído no âmbito definido no Product Backlog. As
+funcionalidades abaixo já estavam identificadas na proposta inicial como
+"funcionalidades futuras", fora do âmbito desta entrega:
+
 - [ ] Autenticação na área de administração
-- [ ] Pagamento online
+- [ ] Pagamento online (ex.: MB WAY ou Stripe)
 - [ ] Notificações automáticas por email
-- [ ] Deployment em ambiente de produção
-- [ ] Dashboard de vendas / relatórios em PDF
+- [ ] Gestão de fornecedores e integração com APIs de faturação
 
 ---
 
